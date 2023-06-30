@@ -1,0 +1,33 @@
+version: '3.4'
+
+services:
+  geth:
+    image: ethereum/client-go:stable
+    network_mode: "host"
+    command:
+      - --http
+      - --http.addr=0.0.0.0
+      - --http.api=eth,net
+      - --http.corsdomain=*
+      - --http.vhosts=*
+      - --allow-insecure-unlock
+      - --authrpc.addr=0.0.0.0
+      - --authrpc.vhosts=*
+      - --authrpc.port=8551
+      - --txlookuplimit=0
+    volumes:
+      - /mnt/volume-nyc1-01/eth:/root/.ethereum
+
+  lodestar:
+    image: chainsafe/lodestar:latest
+    network_mode: "host"
+    command: beacon --dataDir /mnt/volume-nyc1-01/eth --rest --rest.address 0.0.0.0 --metrics --logFile /logs/beacon.log --logFileLevel debug --logFileDailyRotate 5
+    volumes:
+      - /mnt/volume-nyc1-01/eth:/root/lodestar
+      - /mnt/volume-nyc1-01/eth:/root/logs
+    env_file: /mnt/volume-nyc1-01/eth/.env
+
+volumes:
+  geth_docker:
+  lodestar:
+  logs:
